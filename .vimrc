@@ -242,3 +242,27 @@ inoremap <c-b> <Left>
 " quick replace
 nnoremap <leader>, :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
 vnoremap <leader>, :s//<Left>
+
+" Nvimtree
+nnoremap <silent> <C-f> :NvimTreeOpen<CR>:lua require'nvim-tree.view'.focus(nil, true)<CR>
+nnoremap <silent> <leader><C-f> :NvimTreeClose<CR>
+" nnoremap <leader>r :NvimTreeRefresh<CR>
+" nnoremap <silent> <leader>; :NvimTreeFindFile<CR>
+" workaround for files outside of cwd
+" https://github.com/kyazdani42/nvim-tree.lua/issues/240
+nnoremap <leader>; <cmd>lua require('max.nvim-tree').nvim_tree_find_file()<CR>
+
+" replace auto close.
+" Update: it fucks with first file open from telescope
+" autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
+" I prefer remapping this specific one
+function! CleanExit()
+  execute 'exit'
+  if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
+endfunction
+nnoremap <silent><leader>x :call CleanExit()<CR>
+
+" Start nvimtree when Vim is started without file arguments.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | edit . | endif
+
